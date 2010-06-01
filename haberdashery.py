@@ -39,6 +39,18 @@ def search(pac):
 	"""Find a package in fink/brew/ports then run whohas"""
 
 
-def edit(pac):
+def edit(pac, man):
 	"""open a package description in $EDITOR"""
+	#fink has no edit function
+	if man = fink:
+		#fink dumpinfo -finfofile pac | cut -d: -f2 | xargs $editor
+		rawdump = Popen(["fink", "dumpinfo", "-finfofile", pac], stdout=PIPE).communicate()[0]
+		os.system("open " + rawdump.split(":")[1])
 	
+	elif man = brew:
+		os.system("brew edit" + pac)
+	
+	elif man = port:
+		os.system("port edit" + pac)
+	
+
