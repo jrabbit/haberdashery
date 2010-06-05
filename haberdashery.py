@@ -4,6 +4,8 @@
 # GPL v3 or later. (c) Jrabbit 2010.
 
 import os
+import sys
+import commandtool
 from subprocess import *
 
 managers = ["fink", "brew", "port"]
@@ -22,7 +24,7 @@ for x in managers:
 	if len(paths) == 0:
 		print "Sorry found no package managers. Is your $PATH setup correctly?"
 
-def install(pac):
+def install(pac, man='all'):
 	"""Try and install a package"""
 	pass
 
@@ -58,7 +60,7 @@ def search_port(pac):
 		print things
 		return things
 
-def search(pac):
+def search(arguements):
 	"""Find a package in fink/brew/ports then run whohas"""
 
 def edit(pac, man):
@@ -74,4 +76,32 @@ def edit(pac, man):
 		os.system("brew edit" + pac)
 	elif man == port:
 		os.system("port edit" + pac)
+
+def maint(man="all"):
+	if man == all:
+		if managers[0] != 0:
+			maint_fink()
+		elif managers[1] != 0:
+			maint_brew()
+		elif managers[2] != 0:
+			maint_port()
+	elif man == fink:
+		maint_fink()
+	elif man == port:
+		maint_port()
+	elif man == brew:
+		maint_brew()
+
+if __name__ == "__main__":
+	if sys.argv[1] == search:
+		search(sys.argv)
+		#package (defaults to all)
+	elif sys.argv[1] == edit:
+		edit(sys.argv[2], sys.argv[3]) 
+		# package , manager
+	elif sys.argv[1] == install:
+		install(sys.argv[2], sys.argv[3]) 
+		# package , manager
+	elif sys.argv[1] == maint:
+		maint(sys.argv[2])
 
