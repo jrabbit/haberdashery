@@ -107,15 +107,15 @@ def maint(man="all"):
 
 if __name__ == "__main__":
 	print sys.argv
-	if sys.argv[1] == search:
+	if sys.argv[1] == "search":
 		search(sys.argv[2])
 		#package (defaults to all)
-	elif sys.argv[1] == edit:
+	elif sys.argv[1] == "edit":
 		edit(sys.argv[2], sys.argv[3]) 
 		# package , manager
-	elif sys.argv[1] == install:
+	elif sys.argv[1] == "install":
 		install(sys.argv[2], sys.argv[3]) 
 		# package , manager
-	elif sys.argv[1] == maint:
+	elif sys.argv[1] == "maint":
 		maint(sys.argv[2])
 
