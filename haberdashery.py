@@ -79,7 +79,7 @@ def edit(pac, man):
 
 def maint_fink():
 	os.system("fink selfupdate")
-	os.system("fink cleanp")
+	os.system("fink cleanup")
 
 def maint_brew():
 	"""I don't know what else brew needs."""
@@ -90,7 +90,7 @@ def maint_port():
 	os.system("port clean")
 
 def maint(man="all"):
-	if man == all:
+	if man == "all":
 		if managers[0] != 0:
 			print "running maintince on all your package managers"
 			maint_fink()
@@ -117,5 +117,8 @@ if __name__ == "__main__":
 		install(sys.argv[2], sys.argv[3]) 
 		# package , manager
 	elif sys.argv[1] == "maint":
-		maint(sys.argv[2])
+		if len(sys.argv) >= 3:
+			maint(sys.argv[2])
+		else:
+			maint()
 
