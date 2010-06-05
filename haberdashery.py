@@ -77,6 +77,18 @@ def edit(pac, man):
 	elif man == port:
 		os.system("port edit" + pac)
 
+def maint_fink():
+	os.system("fink selfupdate")
+	os.system("fink cleanp")
+
+def maint_brew():
+"""I don't know what else brew needs."""
+	os.system("brew update")
+
+def maint_port():
+	os.system("port selfupdate")
+	os.system("port clean")
+
 def maint(man="all"):
 	if man == all:
 		if managers[0] != 0:
