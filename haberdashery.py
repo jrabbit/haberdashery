@@ -73,9 +73,9 @@ def edit(pac, man):
 		os.system("open " + rawdump.split(":")[1])
 		#this might need adjustments based on if .info files are asociated
 	elif man == "brew":
-		os.system("brew edit" + pac)
+		os.system("brew edit " + pac)
 	elif man == "port":
-		os.system("port edit" + pac)
+		os.system("port edit " + pac)
 
 def maint_fink():
 	os.system("fink selfupdate")
