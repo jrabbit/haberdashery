@@ -25,7 +25,7 @@ for x in managers:
 
         # this may seem redundant but if brew isn't installed and then port is, calling the 2nd key would give the macports path.
 
-    if len(paths) == 0:
+    if is not paths:
         print 'Sorry found no package managers. Is your $PATH setup correctly?'
 
 
@@ -39,7 +39,7 @@ def search_fink(pac):
     """ Searches fink for a package, returns a list of packages line by line"""
 
     things = Popen(['fink', 'list', pac], stdout=PIPE).communicate()[0]
-    if things == 0:
+    if is not things:
         return
     else:
         print 'found ' + len(things.split('\n')) + ' results for ' + pac\
@@ -57,7 +57,7 @@ def search_brew(pac):
     things = Popen(['brew', 'search', pac],
                    stdout=PIPE).communicate()[0]
     things = things.split('\n').pop()
-    if len(things) == 0:
+    if is not things:
         return
     else:
         print 'found ' + len(things) + ' results for ' + pac\
@@ -70,7 +70,7 @@ def search_port(pac):
     """Search macports for a package, returns a list of package lines"""
 
     things = Popen(['port', 'search', pac], stdout=PIPE).communicate()[0]
-    if things == 0:
+    if is not things:
         return
     else:
         print 'found ' + len(things.split('\n')) + ' results for ' + pac\
@@ -81,7 +81,7 @@ def search_port(pac):
 def whohas(pac):
     """Run the included or system whohas and print the findings"""
     p = Popen(['which', 'whohas'], stdout=PIPE).communicate()[0]
-    if not p == None:
+    if p:
        wh = p.strip() #FFFFFFFFF newline.
     else:
         wh = os.getcwd()+"/whohas-0.24/program/whohas"
