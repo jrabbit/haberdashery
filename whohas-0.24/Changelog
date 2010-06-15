@@ -1,0 +1,149 @@
+0.24
+
+Cygwin module added
+
+other modules updated
+
+repository column widened to accommodate huge openSUSE repo strings
+
+other minor changes and fixes
+
+
+0.23
+
+columns have been made wider to accommodate Debian's often excessively long version strings
+
+netbsd, debian and ubuntu now report sizes
+
+netbsd now reports dates
+
+"--shallow" suppresses these fetches, which can be desirable as they are time-consuming and exert server load
+
+all of these calls are threaded by default, can be disabled by "--no-threads" (same procedure as every year, James)
+
+fixed fedora size formatting bug
+
+now warns if distros specified are not recognised (thanks S Cotton for the bug report)
+
+now honours proxies (thanks Thibaut Varene for the bug report, Jonathan Wiltshire for pointing out the fix)
+
+Mandriva module added (thanks Sylvestre Ledru for pointing out the server)
+
+
+0.22
+
+netbsd module now queries pkgsrc.se, shows more details, is faster
+
+Miscellaneous bugfixes
+
+Also using the old combos subroutine again for some repositories, is slower
+
+Added manpages in English and German, updated install script to install manpages to /usr/share/man
+
+
+0.21
+
+Added back Gentoo
+
+Added back Fedora
+
+Changed combos subroutine after profiling showed it to be slow
+
+Including Debian "testing" repositories since we've been including Sourcemage's "test" for a while
+
+Officially no more dependency on wget (for now, at least)
+
+
+0.20
+
+Distributions can now be specified on commandline, using the "-d Distribution1,Distribution2" option; the recognised strings are archlinux, debian, fink, freebsd, macports, netbsd, openbsd, opensuse, slackware, sourcemage, ubuntu
+
+Some unrelated string changes
+
+
+0.19
+
+Added switch for unthreaded runs.
+
+Changed string "DarwinPorts" to "MacPorts"
+
+
+0.18
+
+Added openSUSE module
+
+
+0.17
+
+Fixed several modules; all now working except Gentoo (RIP, web interface was
+removed by Gentoo Project) and Fedora
+
+
+0.16
+
+Bumped or fixed several that weren't working.
+
+Disabled Gentoo because package search seems to have been removed from web.
+
+
+0.15
+
+added support for
+- Ubuntu
+
+Bumped OpenBSD default release to 3.8
+
+Fixed fink parsing.
+
+
+0.14
+
+added support for
+- Fink
+- DarwinPorts
+- linuxpackages.net
+
+Fix Debian version number bug.
+
+Changed size of first column to fit strings "Source Mage" and "DarwinPorts".
+
+
+0.13
+
+fixed Gentoo problem
+
+fixed Slackware problem
+
+made Fedora sizes human-readable
+
+give only most current Gentoo version
+
+
+0.12
+
+changed string "Src Mage" to "SMGL"
+
+added support for
+- Fedora
+
+added a rudimentary install script
+
+
+0.11
+
+version 0.1 re-released as 0.10; version numbering will now have two decimal places
+
+added support for
+- Source Mage
+- FreeBSD
+- NetBSD
+- OpenBSD
+
+information about OpenBSD and NetBSD packages stored locally; updated once a day
+
+date format sort-compatible
+
+modules addressed as threads for speed
+
+module templates included
+

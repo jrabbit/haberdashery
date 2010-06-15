@@ -1,0 +1,14 @@
+whohas 0.22
+
+Dependencies
+============
+
+perl
+LWP::UserAgent (usually packaged as libwww-perl or perl-libwww, depending on distribution)
+date
+
+
+To install
+==========
+
+execute "./install.sh"
