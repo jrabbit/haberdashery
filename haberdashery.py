@@ -69,8 +69,7 @@ def search_brew(pac):
 def search_port(pac):
     """Search macports for a package, returns a list of package lines"""
 
-    things = Popen(['port', 'search', pac],
-                   stdout=PIPE).communicate()[0]
+    things = Popen(['port', 'search', pac], stdout=PIPE).communicate()[0]
     if things == 0:
         return
     else:
@@ -78,6 +77,15 @@ def search_port(pac):
              + ' in your MacPorts:'
         print things
         return things
+
+def whohas(pac):
+    """Run the included or system whohas and print the findings"""
+    p = Popen(['which', 'whohas'], stdout=PIPE).communicate()[0]
+    if not p == None:
+       wh = p.strip() #FFFFFFFFF newline.
+    else:
+        wh = os.getcwd()+"/whohas-0.24/program/whohas"
+    os.system(wh+" "+pac)
 
 
 def search(arguements):
@@ -113,7 +121,6 @@ def maint_fink():
 
 def maint_brew():
     """I don't know what else brew needs."""
-
     os.system('brew update')
 
 
@@ -161,4 +168,5 @@ if __name__ == '__main__':
             maint(sys.argv[2])
         else:
             maint()
-
+    elif sys.argv[1] == 'whohas':
+        whohas(sys.argv[2])
