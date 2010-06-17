@@ -113,6 +113,27 @@ def edit(pac, man):
     elif man == 'port':
         os.system('port edit ' + pac)
 
+def build_dict_fink():
+    packages = []
+    packages_raw = Popen(['fink', 'list'], stdout=PIPE).communicate()[0]
+    #iterate over each line, split them on tabs, grab the third item in each TY DASH/#PYTHON
+    for line in packages_raw.splitlines():
+        packages.append(line.split('\t')[1])
+    return packages #is a list
+
+def build_dict_macports():
+    #untested. 
+    packages = []
+    packages_raw = Popen(['port', 'search'], stdout=PIPE).communicate()[0]
+    for l in packages_raw.splitlines():
+        packages.append(l.split('\t')[0])
+    return packages # list
+
+
+def build_dict_brew():
+    packages_raw = Popen(['brew', 'search'], stdout=PIPE).communicate()[0]
+    packages = packages_raw.splitlines()
+    return packages
 
 def maint_fink():
     os.system('fink selfupdate')
