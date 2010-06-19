@@ -11,7 +11,6 @@ from subprocess import *
 
 managers = ['fink', 'brew', 'port']
 paths = []
-conf = conf.yml
 
 # lets find where you have your pack-mans installed
 
@@ -89,8 +88,25 @@ def whohas(pac):
     os.system(wh+" "+pac)
 
 
-def search(arguements):
+def search(pac, man='all'):
     """Find a package in fink/brew/ports then run whohas"""
+    if man == 'all':
+        print "Searching all package managers"
+        if managers[0] != 'None':
+            search_fink(pac)
+        if managers[1] != 'None':
+            search_brew(pac)
+        if managers[2] != 'None':
+            search_port(pac)
+        whohas(package)
+    elif man == 'fink':
+        search_fink(pac)
+    elif man == 'port':
+        search_port(pac)
+    elif man == 'brew':
+        search_brew(pac)
+    elif man == 'whohas':
+        whohas(pac)
 
 
 def edit(pac, man):
@@ -191,7 +207,10 @@ def maint(man='all'):
 if __name__ == '__main__':
     print sys.argv
     if sys.argv[1] == 'search':
-        search(sys.argv[2])
+        if len(sys.argv) >= 4:
+            search(sys.argv[2], sys.argv[3])
+        else:
+            search(sys.argv[2])
     elif sys.argv[1] == 'edit':
         # package (defaults to all)
         edit(sys.argv[2], sys.argv[3])
@@ -208,3 +227,7 @@ if __name__ == '__main__':
         whohas(sys.argv[2])
     elif sys.argv[1] == 'spelling':
         build_aspell_multi()
+    elif sys.argv[1] == 'help':
+        pass #print list of commands and what args they take
+    else:
+        print "Please run haberdashery with atleast one command. Run 'haberdashery.py help' for help"
