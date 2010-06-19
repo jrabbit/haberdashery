@@ -205,7 +205,10 @@ def maint(man='all'):
         maint_brew()
 
 if __name__ == '__main__':
-    print sys.argv
+    #print sys.argv
+    if len(sys.argv) <= 2:
+        print "Please run haberdashery with atleast one command. Run 'haberdashery.py help' for help"
+        sys.exit(0)
     if sys.argv[1] == 'search':
         if len(sys.argv) >= 4:
             search(sys.argv[2], sys.argv[3])
@@ -229,5 +232,3 @@ if __name__ == '__main__':
         build_aspell_multi()
     elif sys.argv[1] == 'help':
         pass #print list of commands and what args they take
-    else:
-        print "Please run haberdashery with atleast one command. Run 'haberdashery.py help' for help"
