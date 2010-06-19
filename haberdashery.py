@@ -11,6 +11,7 @@ from subprocess import *
 
 managers = ['fink', 'brew', 'port']
 paths = []
+conf = conf.yml
 
 # lets find where you have your pack-mans installed
 
@@ -113,13 +114,15 @@ def edit(pac, man):
     elif man == 'port':
         os.system('port edit ' + pac)
 
+#Spelling related stuff below:
 def build_dict_fink():
     packages = []
     packages_raw = Popen(['fink', 'list'], stdout=PIPE).communicate()[0]
     #iterate over each line, split them on tabs, grab the third item in each TY DASH/#PYTHON
     for line in packages_raw.splitlines():
         packages.append(line.split('\t')[1])
-    return packages #is a list
+    Popen(['aspell', 'create','master' ,'--lang=foo_fink', 'foo-fink'], stin=packages, stdout=PIPE).communicate()
+    #return packages #is a list
 
 def build_dict_macports():
     #untested. 
@@ -127,13 +130,32 @@ def build_dict_macports():
     packages_raw = Popen(['port', 'search'], stdout=PIPE).communicate()[0]
     for l in packages_raw.splitlines():
         packages.append(l.split('\t')[0])
-    return packages # list
-
+    #aspell create master --lang=lang_code path/dict_name < wordlist
+    Popen(['aspell', 'create','master' ,'--lang=foo_port', 'foo-port'], stin=packages, stdout=PIPE).communicate()
+    #return packages # list
 
 def build_dict_brew():
     packages_raw = Popen(['brew', 'search'], stdout=PIPE).communicate()[0]
     packages = packages_raw.splitlines()
-    return packages
+    Popen(['aspell', 'create','master' ,'--lang=foo_brew', 'foo-brew'], stin=packages, stdout=PIPE).communicate()
+    #return packages
+
+def build_aspell_multi():
+    #foo.multi add lang_code.rws
+    f = open('foo.multi', 'rU')
+    langs = []
+    if managers[0] != 'None':
+        build_dict_fink()
+        langs.append("foo-fink.rws")
+    if managers[1] != 'None':
+        build_dict_brew()
+        langs.append("foo-brew.rws")
+    if managers[2] != 'None':
+        build_dict_port()
+        langs.append("foo-port.rws")
+    f.write(langs)
+    f.close()
+    #aspell --lang=foo now
 
 def maint_fink():
     os.system('fink selfupdate')
@@ -152,8 +174,8 @@ def maint_port():
 
 def maint(man='all'):
     if man == 'all':
+        print 'running maintince on all your package managers'
         if managers[0] != 'None':
-            print 'running maintince on all your package managers'
             maint_fink()
         if managers[1] != 'None':
             maint_brew()
@@ -166,28 +188,23 @@ def maint(man='all'):
     elif man == 'brew':
         maint_brew()
 
-
 if __name__ == '__main__':
     print sys.argv
     if sys.argv[1] == 'search':
         search(sys.argv[2])
     elif sys.argv[1] == 'edit':
-
         # package (defaults to all)
-
         edit(sys.argv[2], sys.argv[3])
     elif sys.argv[1] == 'install':
-
         # package , manager
-
         install(sys.argv[2], sys.argv[3])
     elif sys.argv[1] == 'maint':
-
         # package , manager
-
         if len(sys.argv) >= 3:
             maint(sys.argv[2])
         else:
             maint()
     elif sys.argv[1] == 'whohas':
         whohas(sys.argv[2])
+    elif sys.argv[1] == 'spelling':
+        build_aspell_multi()
