@@ -29,15 +29,34 @@ for x in managers:
         print 'Sorry found no package managers. Is your $PATH setup correctly?'
 
 
-def install(pac, man='all'):
-    """Try and install a package"""
+def install(pac, man="solo"):
+    """Try and install a package, need fucntino for multi-packages OR use -1 incides."""
+    if man == "solo" and paths.count("None") == 2:
+        # if theres only one package manger, find it and use it.
+        if paths[0] != 'None':
+            install_fink(pac)
+        if paths[1] != 'None':
+            install_brew(pac)
+        if paths[2] != 'None':
+            install_port(pac)
+    elif man == 'fink':
+        install_fink(pac)
+    elif man == 'port':
+        install_port(pac)
+    elif man == 'brew':
+        install_brew(pac)
 
-    pass
+def install_fink(pac):
+     os.system('fink install ' + pac)
 
+def install_brew(pac):
+    os.system('brew install ' + pac)
+
+def install_port(pac):
+    os.system('port install ' + pac)
 
 def search_fink(pac):
     """ Searches fink for a package, returns a list of packages line by line"""
-
     things = Popen(['fink', 'list', pac], stdout=PIPE).communicate()[0]
     if not things:
         return
@@ -53,7 +72,6 @@ def search_fink(pac):
 
 def search_brew(pac):
     """search homebrew for a package"""
-
     things = Popen(['brew', 'search', pac],
                    stdout=PIPE).communicate()[0]
     things = things.split('\n').pop()
@@ -68,7 +86,6 @@ def search_brew(pac):
 
 def search_port(pac):
     """Search macports for a package, returns a list of package lines"""
-
     things = Popen(['port', 'search', pac], stdout=PIPE).communicate()[0]
     if not things:
         return
@@ -92,11 +109,11 @@ def search(pac, man='all'):
     """Find a package in fink/brew/ports then run whohas"""
     if man == 'all':
         print "Searching all package managers"
-        if managers[0] != 'None':
+        if paths[0] != 'None':
             search_fink(pac)
-        if managers[1] != 'None':
+        if paths[1] != 'None':
             search_brew(pac)
-        if managers[2] != 'None':
+        if paths[2] != 'None':
             search_port(pac)
         whohas(package)
     elif man == 'fink':
@@ -111,21 +128,15 @@ def search(pac, man='all'):
 
 def edit(pac, man):
     """open a package description in $EDITOR"""
-
     # TODO: take editor from commandline
     # fink has no edit function
-
     if man == 'fink':
-
         # fink dumpinfo -finfofile pac | cut -d: -f2 | xargs $editor
-
         rawdump = Popen(['fink', 'dumpinfo', '-finfofile', pac],
                         stdout=PIPE).communicate()[0]
         os.system('open ' + rawdump.split(':')[1])
     elif man == 'brew':
-
         # this might need adjustments based on if .info files are asociated
-
         os.system('brew edit ' + pac)
     elif man == 'port':
         os.system('port edit ' + pac)
@@ -160,18 +171,19 @@ def build_aspell_multi():
     #foo.multi add lang_code.rws
     f = open('foo.multi', 'rU')
     langs = []
-    if managers[0] != 'None':
+    if paths[0] != 'None':
         build_dict_fink()
         langs.append("foo-fink.rws")
-    if managers[1] != 'None':
+    if paths[1] != 'None':
         build_dict_brew()
         langs.append("foo-brew.rws")
-    if managers[2] != 'None':
-        build_dict_port()
+    if paths[2] != 'None':
+        build_dict_macports()
         langs.append("foo-port.rws")
     f.write(langs)
     f.close()
     #aspell --lang=foo now
+#end spelling
 
 def maint_fink():
     os.system('fink selfupdate')
@@ -231,4 +243,6 @@ if __name__ == '__main__':
     elif sys.argv[1] == 'spelling':
         build_aspell_multi()
     elif sys.argv[1] == 'help':
-        pass #print list of commands and what args they take
+        helppage = open('help', 'r')
+        print helppage
+        #print list of commands and what args they take
