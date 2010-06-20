@@ -9,7 +9,7 @@ import os
 import sys
 from subprocess import *
 
-managers = ['fink', 'brew', 'port']
+managers = ['fink', 'brew', 'port', 'pip', 'gem', 'cpan']
 paths = []
 
 # lets find where you have your pack-mans installed
@@ -19,7 +19,7 @@ for x in managers:
     rootpath = os.path.split(os.path.split(rawpath)[0])[0]  # nasty, but it gets us the prefixes
     if len(rootpath) != 0:
         print 'Found a ' + x + ' install at ' + rootpath
-        paths.append(x)
+        paths.append(rootpath)
     else:
         paths.append('None')
 
@@ -28,16 +28,17 @@ for x in managers:
     if not paths:
         print 'Sorry found no package managers. Is your $PATH setup correctly?'
 
+pacman = dict(zip(managers, paths))
 
 def install(pac, man="solo"):
     """Try and install a package, need fucntino for multi-packages OR use -1 incides."""
     if man == "solo" and paths.count("None") == 2:
         # if theres only one package manger, find it and use it.
-        if paths[0] != 'None':
+        if pacman['fink'] != 'None':
             install_fink(pac)
-        if paths[1] != 'None':
+        if pacman['brew'] != 'None':
             install_brew(pac)
-        if paths[2] != 'None':
+        if pacman['port'] != 'None':
             install_port(pac)
     elif man == 'fink':
         install_fink(pac)
@@ -109,11 +110,11 @@ def search(pac, man='all'):
     """Find a package in fink/brew/ports then run whohas"""
     if man == 'all':
         print "Searching all package managers"
-        if paths[0] != 'None':
+        if pacman['fink'] != 'None':
             search_fink(pac)
-        if paths[1] != 'None':
+        if pacman['brew'] != 'None':
             search_brew(pac)
-        if paths[2] != 'None':
+        if pacman['port'] != 'None':
             search_port(pac)
         whohas(package)
     elif man == 'fink':
@@ -171,13 +172,13 @@ def build_aspell_multi():
     #foo.multi add lang_code.rws
     f = open('foo.multi', 'rU')
     langs = []
-    if paths[0] != 'None':
+    if pacman['fink'] != 'None':
         build_dict_fink()
         langs.append("foo-fink.rws")
-    if paths[1] != 'None':
+    if pacman['brew'] != 'None':
         build_dict_brew()
         langs.append("foo-brew.rws")
-    if paths[2] != 'None':
+    if pacman['port'] != 'None':
         build_dict_macports()
         langs.append("foo-port.rws")
     f.write(langs)
@@ -203,11 +204,11 @@ def maint_port():
 def maint(man='all'):
     if man == 'all':
         print 'running maintince on all your package managers'
-        if managers[0] != 'None':
+        if pacman['fink'] != 'None':
             maint_fink()
-        if managers[1] != 'None':
+        if pacman['brew'] != 'None':
             maint_brew()
-        if managers[2] != 'None':
+        if pacman['port'] != 'None':
             maint_port()
     elif man == 'fink':
         maint_fink()
@@ -217,8 +218,9 @@ def maint(man='all'):
         maint_brew()
 
 if __name__ == '__main__':
-    #print sys.argv
-    if len(sys.argv) <= 2:
+    print sys.argv
+    print combo
+    if len(sys.argv) < 2:
         print "Please run haberdashery with atleast one command. Run 'haberdashery.py help' for help"
         sys.exit(0)
     if sys.argv[1] == 'search':
