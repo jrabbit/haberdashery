@@ -40,12 +40,16 @@ def install(pac, man="solo"):
             install_brew(pac)
         if pacman['port'] != 'None':
             install_port(pac)
-    elif man == 'fink':
-        install_fink(pac)
-    elif man == 'port':
-        install_port(pac)
-    elif man == 'brew':
-        install_brew(pac)
+        if pacman['pip'] != 'None':
+            install_pip(pac)
+        if pacman['gem'] != 'None':
+            install_gem(pac)
+        if pacman['cpan'] != 'None':
+            install_cpan(pac)
+    else:
+        locals()['install_%s' % man](pac)
+
+        
 
 def install_fink(pac):
      os.system('fink install ' + pac)
@@ -96,7 +100,7 @@ def search_port(pac):
         print things
         return things
 
-def whohas(pac):
+def search_whohas(pac):
     """Run the included or system whohas and print the findings"""
     p = Popen(['which', 'whohas'], stdout=PIPE).communicate()[0]
     if p:
@@ -116,16 +120,16 @@ def search(pac, man='all'):
             search_brew(pac)
         if pacman['port'] != 'None':
             search_port(pac)
-        whohas(package)
-    elif man == 'fink':
-        search_fink(pac)
-    elif man == 'port':
-        search_port(pac)
-    elif man == 'brew':
-        search_brew(pac)
-    elif man == 'whohas':
-        whohas(pac)
-
+        if pacman['pip'] != 'None':
+            search_pip(pac)
+        if pacman['gem'] != 'None':
+            search_gem(pac)
+        if pacman['cpan'] != 'None':
+            search_cpan(pac)
+        search_whohas(package)
+    else:
+        locals()['search_%s' % man](pac)
+        #someone said this is wrong but its short and sweet.
 
 def edit(pac, man):
     """open a package description in $EDITOR"""
@@ -210,16 +214,12 @@ def maint(man='all'):
             maint_brew()
         if pacman['port'] != 'None':
             maint_port()
-    elif man == 'fink':
-        maint_fink()
-    elif man == 'port':
-        maint_port()
-    elif man == 'brew':
-        maint_brew()
+    else:
+        locals()['maint_%s' % man]()
 
 if __name__ == '__main__':
     print sys.argv
-    print combo
+    print pacman
     if len(sys.argv) < 2:
         print "Please run haberdashery with atleast one command. Run 'haberdashery.py help' for help"
         sys.exit(0)
