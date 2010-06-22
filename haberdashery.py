@@ -49,8 +49,6 @@ def install(pac, man="solo"):
     else:
         locals()['install_%s' % man](pac)
 
-        
-
 def install_fink(pac):
      os.system('fink install ' + pac)
 
@@ -59,6 +57,16 @@ def install_brew(pac):
 
 def install_port(pac):
     os.system('port install ' + pac)
+
+def install_pip(pac):
+    os.system('pip install ' + pac)
+
+def install_gem(pac):
+    os.system('gem install ' + pac)
+
+def install_cpan(pac):
+    os.system("PERL_MM_USE_DEFAULT=1 perl -MCPAN -e 'install %s'" % (pac, ) )
+
 
 def search_fink(pac):
     """ Searches fink for a package, returns a list of packages line by line"""
@@ -109,6 +117,48 @@ def search_whohas(pac):
         wh = os.getcwd()+"/whohas-0.24/program/whohas"
     os.system(wh+" "+pac)
 
+def search_pip(pac):
+    # pip search "query"
+    raw = Popen(['pip', 'search', "%s" % (pac, )], stdout=PIPE).communicate()[0]
+    things = raw.split('\n')
+    if not things:
+        return
+    else:
+        print 'found ' + len(things.split('\n')) + ' results for ' + pac\
+             + ' On pypi.python.org:'
+        print things
+        return things
+
+def search_gem(pac):
+    things = []
+    raw = Popen(['gem', 'search','-b', pac], stdout=PIPE).communicate()[0]
+    for x in raw.split('\n'):
+        if x and x != '*** LOCAL GEMS ***' and x != '*** REMOTE GEMS ***':
+            things.append(x)
+    if not things:
+       return
+    else:
+       print 'found ' + len(things) + ' results for ' + pac\
+            + ' in your configured rubygems sources:'
+       print things
+       return things
+    
+
+def search_cpan(pac):
+    #perl -MCPAN -e 'CPAN::Shell->m( q[REGEXGOESHERE] )'
+    #regex actally goes in q[] because it needs to be a string. silly perl.
+    raw = Popen(['PERL_MM_USE_DEFAULT=1', 'perl', '-MCPAN','-e', "'CPAN::Shell->m( q[/%s/] )" % (pac, )], stdout=PIPE).communicate()[0]
+    things = []
+    for x in raw.split('\n'):
+        if x.startswith("Module"): #remove CPAN's garble.
+            things.append(x)
+    if not things:
+        return
+    else:
+        print 'found ' + len(things.split('\n')) + ' results for ' + pac\
+             + ' in CPAN:'
+        print things
+        return things
 
 def search(pac, man='all'):
     """Find a package in fink/brew/ports then run whohas"""
