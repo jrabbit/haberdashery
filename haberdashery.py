@@ -11,13 +11,14 @@ from subprocess import *
 
 managers = ['fink', 'brew', 'port', 'pip', 'gem', 'cpan']
 paths = []
+verbosity=1
 
 # lets find where you have your pack-mans installed
 
 for x in managers:
     rawpath = Popen(['which', x], stdout=PIPE).communicate()[0]
     rootpath = os.path.split(os.path.split(rawpath)[0])[0]  # nasty, but it gets us the prefixes
-    if len(rootpath) != 0:
+    if rootpath and verbosity:
         print 'Found a ' + x + ' install at ' + rootpath
         paths.append(rootpath)
     else:
@@ -51,8 +52,10 @@ def install(pac, man="solo"):
         instain = {'fink': install_fink, 'brew': install_brew, 'port': install_port, 'pip': install_pip, 'gem': install_gem, 'cpan': install_cpan} 
         try:
             f = instain[man]
-            print "trying to install package %s on %s" % (pac, man)
+            print "Trying to install package %s on %s" % (pac, man)
             f(pac)
+        except KeyError:
+            print "Please use install like this: haberdashery.py install package manager: \nhaberdashery.py install %s %s" % (man, pac)
 
 def install_fink(pac):
      os.system('fink install ' + pac)
@@ -190,10 +193,8 @@ def search(pac, man='all'):
             print "trying to run a search on %s for %s" % (man, pac)
             f(pac)
         except KeyError:
-            print "Please use search like this: haberdashery.py search package manager: \n  haberdashery.py search %s %s" % (man, pac)
+            print "Please use search like this: haberdashery.py search package manager: \nhaberdashery.py search %s %s" % (man, pac)
        # locals()['search_%s(pac)' % man]
-        #someone said this is wrong but its short and sweet. and broken.
-
 def edit(pac, man):
     """open a package description in $EDITOR"""
     # TODO: take editor from commandline
@@ -219,7 +220,7 @@ def build_dict_fink():
     Popen(['aspell', 'create','master' ,'--lang=foo_fink', 'foo-fink'], stin=packages, stdout=PIPE).communicate()
     #return packages #is a list
 
-def build_dict_macports():
+def build_dict_port():
     #untested. 
     packages = []
     packages_raw = Popen(['port', 'search'], stdout=PIPE).communicate()[0]
@@ -239,15 +240,20 @@ def build_aspell_multi():
     #foo.multi add lang_code.rws
     f = open('foo.multi', 'rU')
     langs = []
-    if pacman['fink'] != 'None':
-        build_dict_fink()
-        langs.append("foo-fink.rws")
-    if pacman['brew'] != 'None':
-        build_dict_brew()
-        langs.append("foo-brew.rws")
-    if pacman['port'] != 'None':
-        build_dict_macports()
-        langs.append("foo-port.rws")
+    for man in pacman:
+        if pacman[man] != 'None':
+            funct = build_dict_ + man
+            funct()
+            langs.append("foo-%s.rws" % man)
+    # if pacman['fink'] != 'None':
+    #     build_dict_fink()
+    #     langs.append("foo-fink.rws")
+    # if pacman['brew'] != 'None':
+    #     build_dict_brew()
+    #     langs.append("foo-brew.rws")
+    # if pacman['port'] != 'None':
+    #     build_dict_port()
+    #     langs.append("foo-port.rws")
     f.write(langs)
     f.close()
     #aspell --lang=foo now
@@ -278,11 +284,16 @@ def maint(man='all'):
         if pacman['port'] != 'None':
             maint_port()
     else:
-        locals()['maint_%s' % man]()
+        maint = {'fink': maint_fink, 'brew': maint_brew, 'port': maint_port} 
+        #'pip': maint_pip, 'gem': maint_gem, 'cpan': maint_cpan
+        f = maint[man]-
+        print "running maintince on %s" % man
+        f()
 
 if __name__ == '__main__':
-    print sys.argv
-    print pacman
+    if verbosity:
+        print sys.argv
+        print pacman
     if len(sys.argv) < 2:
         print "Please run haberdashery with atleast one command. Run 'haberdashery.py help' for help"
         sys.exit(0)
