@@ -32,8 +32,9 @@ pacman = dict(zip(managers, paths))
 
 def install(pac, man="solo"):
     """Try and install a package, need fucntino for multi-packages OR use -1 incides."""
-    if man == "solo" and paths.count("None") == 2:
+    if man == "solo" and paths.count("None") == 5:
         # if theres only one package manger, find it and use it.
+        #Ok this might not work since I added pip,gem, and cpan
         if pacman['fink'] != 'None':
             install_fink(pac)
         if pacman['brew'] != 'None':
@@ -47,7 +48,11 @@ def install(pac, man="solo"):
         if pacman['cpan'] != 'None':
             install_cpan(pac)
     else:
-        locals()['install_%s' % man](pac)
+        instain = {'fink': install_fink, 'brew': install_brew, 'port': install_port, 'pip': install_pip, 'gem': install_gem, 'cpan': install_cpan} 
+        try:
+            f = instain[man]
+            print "trying to install package %s on %s" % (pac, man)
+            f(pac)
 
 def install_fink(pac):
      os.system('fink install ' + pac)
