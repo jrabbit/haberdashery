@@ -74,7 +74,7 @@ def search_fink(pac):
     if not things:
         return
     else:
-        print 'found ' + len(things.split('\n')) + ' results for ' + pac\
+        print 'found ' + str(len(things.split('\n'))) + ' results for ' + pac\
              + ' in your Fink:'
         print things
         return things
@@ -91,7 +91,7 @@ def search_brew(pac):
     if not things:
         return
     else:
-        print 'found ' + len(things) + ' results for ' + pac\
+        print 'found ' + str(len(things)) + ' results for ' + pac\
              + ' in your homebrew:'
         print things
         return things
@@ -103,7 +103,7 @@ def search_port(pac):
     if not things:
         return
     else:
-        print 'found ' + len(things.split('\n')) + ' results for ' + pac\
+        print 'found ' + str(len(things.split('\n'))) + ' results for ' + pac\
              + ' in your MacPorts:'
         print things
         return things
@@ -124,7 +124,7 @@ def search_pip(pac):
     if not things:
         return
     else:
-        print 'found ' + len(things.split('\n')) + ' results for ' + pac\
+        print 'found ' + str(len(things)) + ' results for ' + pac\
              + ' On pypi.python.org:'
         print things
         return things
@@ -138,7 +138,7 @@ def search_gem(pac):
     if not things:
        return
     else:
-       print 'found ' + len(things) + ' results for ' + pac\
+       print 'found ' + str(len(things)) + ' results for ' + pac\
             + ' in your configured rubygems sources:'
        print things
        return things
@@ -147,7 +147,7 @@ def search_gem(pac):
 def search_cpan(pac):
     #perl -MCPAN -e 'CPAN::Shell->m( q[REGEXGOESHERE] )'
     #regex actally goes in q[] because it needs to be a string. silly perl.
-    raw = Popen(['PERL_MM_USE_DEFAULT=1', 'perl', '-MCPAN','-e', "'CPAN::Shell->m( q[/%s/] )" % (pac, )], stdout=PIPE).communicate()[0]
+    raw = Popen(['perl', '-MCPAN','-e', "'CPAN::Shell->m( q[/%s/] )'" % pac], stdout=PIPE, env ={"PERL_MM_USE_DEFAULT": "1"}).communicate()[0]
     things = []
     for x in raw.split('\n'):
         if x.startswith("Module"): #remove CPAN's garble.
@@ -155,7 +155,7 @@ def search_cpan(pac):
     if not things:
         return
     else:
-        print 'found ' + len(things.split('\n')) + ' results for ' + pac\
+        print 'found ' + str(len(things)) + ' results for ' + pac\
              + ' in CPAN:'
         print things
         return things
@@ -176,10 +176,18 @@ def search(pac, man='all'):
             search_gem(pac)
         if pacman['cpan'] != 'None':
             search_cpan(pac)
-        search_whohas(package)
+        search_whohas(pac)
     else:
-        locals()['search_%s' % man](pac)
-        #someone said this is wrong but its short and sweet.
+        nofunzone = {'fink': search_fink, 'brew': search_brew, 'port': search_port, 'pip': search_pip, 'gem': search_gem, 'cpan': search_cpan} 
+        #print nofunzone
+        try:
+            f = nofunzone[man]
+            print "trying to run a search on %s for %s" % (man, pac)
+            f(pac)
+        except KeyError:
+            print "Please use search like this: haberdashery.py search package manager: \n  haberdashery.py search %s %s" % (man, pac)
+       # locals()['search_%s(pac)' % man]
+        #someone said this is wrong but its short and sweet. and broken.
 
 def edit(pac, man):
     """open a package description in $EDITOR"""
