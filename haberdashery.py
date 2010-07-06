@@ -14,7 +14,7 @@ paths = []
 verbosity=1
 
 # lets find where you have your pack-mans installed
-
+#def firstrun():
 for x in managers:
     rawpath = Popen(['which', x], stdout=PIPE).communicate()[0]
     rootpath = os.path.split(os.path.split(rawpath)[0])[0]  # nasty, but it gets us the prefixes
@@ -276,7 +276,7 @@ def maint_port():
 
 def maint(man='all'):
     if man == 'all':
-        print 'running maintince on all your package managers'
+        print 'running maintenance on all your package managers'
         if pacman['fink'] != 'None':
             maint_fink()
         if pacman['brew'] != 'None':
@@ -286,8 +286,8 @@ def maint(man='all'):
     else:
         maint = {'fink': maint_fink, 'brew': maint_brew, 'port': maint_port} 
         #'pip': maint_pip, 'gem': maint_gem, 'cpan': maint_cpan
-        f = maint[man]-
-        print "running maintince on %s" % man
+        f = maint[man]
+        print "running maintenance on %s" % man
         f()
 
 if __name__ == '__main__':
