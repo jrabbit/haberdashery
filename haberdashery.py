@@ -8,6 +8,7 @@
 import os
 import sys
 from subprocess import *
+import pip
 
 managers = ['fink', 'brew', 'port', 'pip', 'gem', 'cpan']
 paths = []
@@ -19,8 +20,12 @@ for x in managers:
     rawpath = Popen(['which', x], stdout=PIPE).communicate()[0]
     rootpath = os.path.split(os.path.split(rawpath)[0])[0]  # nasty, but it gets us the prefixes
     if rootpath and verbosity:
-        print 'Found a ' + x + ' install at ' + rootpath
-        paths.append(rootpath)
+        if x is not 'pip':
+            print 'Found a ' + x + ' install at ' + rootpath
+            paths.append(rootpath)
+        elif pip.is_python():
+            print 'Found a ' + x + ' install at ' + rootpath
+            paths.append(rootpath)
     else:
         paths.append('None')
 
@@ -28,6 +33,7 @@ for x in managers:
 
     if not paths:
         print 'Sorry found no package managers. Is your $PATH setup correctly?'
+        print 'Your current $PATH: %s' % os.environ['PATH']
 
 pacman = dict(zip(managers, paths))
 
