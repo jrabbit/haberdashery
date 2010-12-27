@@ -8,6 +8,7 @@
 import os
 import sys
 from subprocess import *
+
 import pip
 
 managers = ['fink', 'brew', 'port', 'pip', 'gem', 'cpan']
@@ -296,6 +297,33 @@ def maint(man='all'):
         print "running maintenance on %s" % man
         f()
 
+def migrate(manager, orig, to):
+    """Migrate packages in a package manager from one kind to another
+    like from mercurial-py25 to mercurial-py27 but for all python 2.5 packages"""
+    if manager not in pacman:
+        sys.exit("wrong package manager")
+    pass
+    #is package installed?
+    orig_pkgs = []
+    packages_raw = Popen(['fink', 'list', orig], stdout=PIPE).communicate()[0]
+    for line in packages_raw.splitlines():
+        package_meta = line.split('\t')
+        if package_meta[0].strip():
+            #yes package is installed.
+            name = (line.split('\t')[1])
+            # fink's variants are denoted by -py25 so seperate by - and pop last value
+            orig_pkgs.append(name)
+    #does package match from
+    #does package have a counterpart
+    new_pkgs = []
+    for pkg in orig_pkgs:
+        new_pkgs.append(pkg[:-4] + to)
+    #install counterparts
+    fink_install(' '.join(new_pkgs))
+    if remove:
+        pass
+
+
 if __name__ == '__main__':
     if verbosity:
         print sys.argv
@@ -303,6 +331,7 @@ if __name__ == '__main__':
     if len(sys.argv) < 2:
         print "Please run haberdashery with atleast one command. Run 'haberdashery.py help' for help"
         sys.exit(0)
+    
     if sys.argv[1] == 'search':
         if len(sys.argv) >= 4:
             search(sys.argv[2], sys.argv[3])
@@ -328,3 +357,5 @@ if __name__ == '__main__':
         helppage = open('help', 'r')
         print helppage
         #print list of commands and what args they take
+    elif sys.srgv[1] == 'migrate':
+        migrate(sys.argv[2], sys.argv[3], sys.argv[4])
