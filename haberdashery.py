@@ -295,6 +295,13 @@ def maint_port():
     os.system('port selfupdate')
     os.system('port clean')
 
+@baker.command(name="pip-upgrade")
+def pip_upgrade():
+    "install -U  all packages, learns from pipfreeze."
+    pkgs = Popen(['pip', 'freeze'], stdout=PIPE).communicate()[0]
+    pkglst = [x.split('==')[0] for x in pkgs.splitlines()]
+    print "Found %s python modules in pip" % len(pkglst)
+    Popen(['pip', 'install', '-U'] + pkglst)
 
 @baker.command
 def maint(man='all'):
