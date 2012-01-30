@@ -9,6 +9,8 @@ import os
 import sys
 from subprocess import *
 
+import baker
+
 import pip
 
 managers = ['fink', 'brew', 'port', 'pip', 'gem', 'cpan']
@@ -20,7 +22,7 @@ verbosity=1
 for x in managers:
     rawpath = Popen(['which', x], stdout=PIPE).communicate()[0]
     rootpath = os.path.split(os.path.split(rawpath)[0])[0]  # nasty, but it gets us the prefixes
-    if rootpath and verbosity:
+    if rootpath:
         if x is not 'pip':
             print 'Found a ' + x + ' install at ' + rootpath
             paths.append(rootpath)
@@ -35,6 +37,9 @@ for x in managers:
     if not paths:
         print 'Sorry found no package managers. Is your $PATH setup correctly?'
         print 'Your current $PATH: %s' % os.environ['PATH']
+
+print managers
+print paths
 
 pacman = dict(zip(managers, paths))
 
@@ -175,6 +180,7 @@ def search_cpan(pac):
         print things
         return things
 
+@baker.command
 def search(pac, man='all'):
     """Find a package in fink/brew/ports then run whohas"""
     if man == 'all':
@@ -202,6 +208,8 @@ def search(pac, man='all'):
         except KeyError:
             print "Please use search like this: haberdashery.py search package manager: \nhaberdashery.py search %s %s" % (man, pac)
        # locals()['search_%s(pac)' % man]
+
+@baker.command
 def edit(pac, man):
     """open a package description in $EDITOR"""
     # TODO: take editor from commandline
@@ -330,13 +338,7 @@ if __name__ == '__main__':
         print pacman
     if len(sys.argv) < 2:
         print "Please run haberdashery with atleast one command. Run 'haberdashery.py help' for help"
-        sys.exit(0)
-    
-    if sys.argv[1] == 'search':
-        if len(sys.argv) >= 4:
-            search(sys.argv[2], sys.argv[3])
-        else:
-            search(sys.argv[2])
+        sys.exit(0)    
     elif sys.argv[1] == 'edit':
         # package (defaults to all)
         edit(sys.argv[2], sys.argv[3])
@@ -357,5 +359,6 @@ if __name__ == '__main__':
         helppage = open('help', 'r')
         print helppage
         #print list of commands and what args they take
-    elif sys.srgv[1] == 'migrate':
+    elif sys.argv[1] == 'migrate':
         migrate(sys.argv[2], sys.argv[3], sys.argv[4])
+    baker.run()
