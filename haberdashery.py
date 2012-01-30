@@ -145,13 +145,14 @@ def search_whohas(pac):
 def search_pip(pac):
     # pip search "query"
     raw = Popen(['pip', 'search', "%s" % (pac, )], stdout=PIPE).communicate()[0]
-    things = raw.split('\n')
+    things = raw.split('\n')[:-1]
     if not things:
         return
     else:
         print 'found ' + str(len(things)) + ' results for ' + pac\
              + ' On pypi.python.org:'
-        print things
+        for x in things:
+            print x
         return things
 
 def search_gem(pac):
