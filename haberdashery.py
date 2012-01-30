@@ -24,10 +24,12 @@ for x in managers:
     rootpath = os.path.split(os.path.split(rawpath)[0])[0]  # nasty, but it gets us the prefixes
     if rootpath:
         if x is not 'pip':
-            print 'Found a ' + x + ' install at ' + rootpath
+            if verbosity:
+                print 'Found a ' + x + ' install at ' + rootpath
             paths.append(rootpath)
         elif pip.is_python():
-            print 'Found a ' + x + ' install at ' + rootpath
+            if verbosity:
+                print 'Found a ' + x + ' install at ' + rootpath
             paths.append(rootpath)
     else:
         paths.append('None')
@@ -38,11 +40,13 @@ for x in managers:
         print 'Sorry found no package managers. Is your $PATH setup correctly?'
         print 'Your current $PATH: %s' % os.environ['PATH']
 
-print managers
-print paths
+if verbosity:
+    print managers
+    print paths
 
 pacman = dict(zip(managers, paths))
 
+@baker.command
 def install(pac, man="solo"):
     """Try and install a package, need fucntino for multi-packages OR use -1 incides."""
     if man == "solo" and paths.count("None") == 5:
@@ -128,6 +132,7 @@ def search_port(pac):
         print things
         return things
 
+@baker.command(name="whohas")
 def search_whohas(pac):
     """Run the included or system whohas and print the findings"""
     p = Popen(['which', 'whohas'], stdout=PIPE).communicate()[0]
@@ -251,6 +256,7 @@ def build_dict_brew():
     Popen(['aspell', 'create','master' ,'--lang=foo_brew', 'foo-brew'], stin=packages, stdout=PIPE).communicate()
     #return packages
 
+@baker.command(name="spelling")
 def build_aspell_multi():
     #foo.multi add lang_code.rws
     f = open('foo.multi', 'rU')
@@ -289,6 +295,7 @@ def maint_port():
     os.system('port clean')
 
 
+@baker.command
 def maint(man='all'):
     if man == 'all':
         print 'running maintenance on all your package managers'
@@ -308,6 +315,7 @@ def maint(man='all'):
 def migrate(manager, orig, to):
     """Migrate packages in a package manager from one kind to another
     like from mercurial-py25 to mercurial-py27 but for all python 2.5 packages"""
+    #TODO: Fix logic, expose to user.
     if manager not in pacman:
         sys.exit("wrong package manager")
     pass
@@ -338,27 +346,7 @@ if __name__ == '__main__':
         print pacman
     if len(sys.argv) < 2:
         print "Please run haberdashery with atleast one command. Run 'haberdashery.py help' for help"
-        sys.exit(0)    
-    elif sys.argv[1] == 'edit':
-        # package (defaults to all)
-        edit(sys.argv[2], sys.argv[3])
-    elif sys.argv[1] == 'install':
-        # package , manager
-        install(sys.argv[2], sys.argv[3])
-    elif sys.argv[1] == 'maint':
-        # package , manager
-        if len(sys.argv) >= 3:
-            maint(sys.argv[2])
-        else:
-            maint()
-    elif sys.argv[1] == 'whohas':
-        whohas(sys.argv[2])
-    elif sys.argv[1] == 'spelling':
-        build_aspell_multi()
+        sys.exit(0)
     elif sys.argv[1] == 'help':
-        helppage = open('help', 'r')
-        print helppage
-        #print list of commands and what args they take
-    elif sys.argv[1] == 'migrate':
-        migrate(sys.argv[2], sys.argv[3], sys.argv[4])
+        baker.usage()
     baker.run()
