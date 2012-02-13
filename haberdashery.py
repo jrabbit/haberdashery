@@ -139,7 +139,7 @@ def search_whohas(pac):
     if p:
        wh = p.strip() #FFFFFFFFF newline.
     else:
-        wh = os.getcwd()+"/whohas-0.24/program/whohas"
+        wh = os.getcwd()+"/whohas-0.29/program/whohas"
     os.system(wh+" "+pac)
 
 def search_pip(pac):
